@@ -72,9 +72,11 @@ export default {
 
     const data = await upstream.json();
     const text = (data.content && data.content[0] && data.content[0].text) || "";
+    const cleaned = text.trim().replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
+    const match = cleaned.match(/\{[\s\S]*\}/);
     let parsed;
     try {
-      parsed = JSON.parse(text);
+      parsed = JSON.parse(match ? match[0] : cleaned);
     } catch (e) {
       parsed = { bot: "주영봇", reply: text || "(응답을 이해하지 못했습니다)" };
     }
