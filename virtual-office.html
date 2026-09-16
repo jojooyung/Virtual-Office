@@ -70,6 +70,12 @@ pre{background:#2f3944;color:#e6edf3;border-radius:8px;padding:10px 12px;overflo
   border-radius:8px;padding:8px;resize:vertical;min-height:58px;background:#fff;color:var(--ink)}
 .gbook .go{margin-top:6px;font-family:var(--font-head);font-size:13px;background:var(--accent);color:#fff;
   border:0;border-radius:20px;padding:6px 16px;cursor:pointer}
+.gbook .go:disabled{opacity:.6;cursor:default}
+.gbook input[type=url]{width:100%;font-family:var(--font-body);font-size:13px;border:1px solid var(--line);
+  border-radius:8px;padding:8px;background:#fff;color:var(--ink);margin-top:6px}
+.workercfg{margin-bottom:14px;font-size:12px;color:var(--ink-2);border:1px dashed var(--line);border-radius:8px;padding:8px 10px}
+.workercfg summary{cursor:pointer;font-family:var(--font-head);color:var(--blue);font-size:13px}
+.workercfg .go{padding:5px 14px;font-size:12px}
 .gitem{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-top:8px;background:var(--panel-2);font-size:13px}
 .gitem .meta{font-size:11px;color:var(--ink-2);margin-bottom:2px}
 .foot{text-align:center;font-size:11px;color:#dce7f0;margin-top:12px}
@@ -294,6 +300,14 @@ description: 팀장. 업무를 나누고 결과를 최종 검토한다.
       <section id="p-order" role="tabpanel" aria-labelledby="t-order" hidden class="gbook">
         <h2>업무 지시하기</h2>
         <p class="desc">대표님, 아래에 지시 사항을 입력하시면 주영봇이 접수 후 담당 봇에게 배분합니다.</p>
+        <details class="workercfg">
+          <summary>⚙ 실제 AI 연동 설정 (선택)</summary>
+          <p class="desc" style="margin-top:6px">Cloudflare Worker 주소를 입력하면 진짜 Claude가 답변합니다. 비워두면 예시 응답만 표시돼요. (worker/juyoung-worker.js 참고)</p>
+          <label class="sr-only" for="workerUrl">Worker 주소</label>
+          <input type="url" id="workerUrl" placeholder="https://your-worker.your-name.workers.dev">
+          <button type="button" class="go" id="workerSave">저장</button>
+          <div id="workerStatus" class="desc"></div>
+        </details>
         <label class="sr-only" for="omsg">지시 내용</label>
         <textarea id="omsg" placeholder="예: 이번 주 보고서 초안 준비해줘"></textarea>
         <div id="oerr" class="err" hidden>지시 내용을 입력해 주세요</div>
@@ -382,6 +396,21 @@ description: 팀장. 업무를 나누고 결과를 최종 검토한다.
     return "왈! 알림 등록했어요 🐾";
   }
 
+  var workerUrlEl=document.getElementById("workerUrl"), workerStatus=document.getElementById("workerStatus"),
+      workerSave=document.getElementById("workerSave");
+  var savedWorker=load("vo_worker_url","");
+  if(workerUrlEl) workerUrlEl.value=savedWorker;
+  function updateWorkerStatus(){
+    if(!workerStatus) return;
+    workerStatus.textContent=savedWorker?("연결됨: "+savedWorker):"연결 안 됨 (예시 응답만 표시)";
+  }
+  updateWorkerStatus();
+  if(workerSave) workerSave.addEventListener("click",function(){
+    savedWorker=(workerUrlEl.value||"").trim();
+    save("vo_worker_url",savedWorker);
+    updateWorkerStatus();
+  });
+
   var olist=document.getElementById("olist"), ota=document.getElementById("omsg"),
       oerr=document.getElementById("oerr"), orderDiary=document.getElementById("orderDiary"),
       ticketEl=document.getElementById("ticketNum");
@@ -408,11 +437,29 @@ description: 팀장. 업무를 나누고 결과를 최종 검토한다.
   document.getElementById("obtn").addEventListener("click",function(){
     var v=ota.value.trim();
     if(!v){oerr.hidden=false;return}
-    var bot=assignBot(v);
-    var arr=[]; try{arr=JSON.parse(load("vo_orders","[]"))||[]}catch(e){arr=[]}
-    arr.push({cmd:v,bot:bot,resp:botResp(bot),t:new Date().toLocaleString("ko-KR")});
-    save("vo_orders",JSON.stringify(arr.slice(-30)));
-    ota.value=""; renderOrders();
+    var goBtn=this, origLabel=goBtn.textContent;
+    function finish(bot,resp){
+      var arr=[]; try{arr=JSON.parse(load("vo_orders","[]"))||[]}catch(e){arr=[]}
+      arr.push({cmd:v,bot:bot,resp:resp,t:new Date().toLocaleString("ko-KR")});
+      save("vo_orders",JSON.stringify(arr.slice(-30)));
+      ota.value=""; renderOrders();
+      goBtn.disabled=false; goBtn.textContent=origLabel;
+    }
+    if(savedWorker){
+      goBtn.disabled=true; goBtn.textContent="처리 중...";
+      fetch(savedWorker,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({cmd:v})})
+        .then(function(r){return r.json()})
+        .then(function(data){
+          if(data && data.reply) finish(data.bot||assignBot(v), data.reply);
+          else finish(assignBot(v), "(연동 응답 오류, 예시 응답) "+botResp(assignBot(v)));
+        })
+        .catch(function(){
+          finish(assignBot(v), "(연결 실패, 예시 응답) "+botResp(assignBot(v)));
+        });
+    } else {
+      var bot=assignBot(v);
+      finish(bot, botResp(bot));
+    }
   });
   renderOrders();
 })();
