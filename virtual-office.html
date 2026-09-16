@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>가상 사무실 미니홈피</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap" rel="stylesheet">
+<style>
+:root{
+  --page:#7d93ab; --panel:#ffffff; --panel-2:#f3f6fa; --line:#c3d2e0;
+  --ink:#333c46; --ink-2:#6b7a8a; --accent:#e4638b; --accent-2:#fdeef3;
+  --blue:#5b87b5; --blue-soft:#dbe8f4; --today:#e8543f;
+  --font-head:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --font-body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --page:#2a3340; --panel:#f7f9fc; --panel-2:#eef2f7; --line:#b9c8d6;
+  }
+}
+:root[data-theme="dark"]{ --page:#2a3340; --panel:#f7f9fc; --panel-2:#eef2f7; --line:#b9c8d6; }
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);font-family:var(--font-body);color:var(--ink);
+  padding:14px 10px 40px;line-height:1.6;-webkit-text-size-adjust:100%}
+.wrap{max-width:860px;margin:0 auto}
+.frame{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.topbar{background:linear-gradient(180deg,#cfe0ee,#b6cde0);border-bottom:1px solid var(--line);
+  padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.logo{font-family:var(--font-head);font-size:17px;color:#2f4a63;letter-spacing:.5px}
+.counter{font-size:12px;color:#40566b;display:flex;gap:10px}
+.counter b{color:var(--today);font-family:var(--font-head);font-size:14px}
+.cols{display:flex;flex-direction:column}
+@media(min-width:720px){.cols{flex-direction:row}}
+.left{padding:14px;border-bottom:1px dashed var(--line)}
+@media(min-width:720px){.left{width:320px;flex:none;border-bottom:0;border-right:1px dashed var(--line)}}
+.right{padding:14px;flex:1;min-width:0}
+.miniroom{background:linear-gradient(180deg,#eaf3fb 0 62%,#e8cfa8 62% 100%);
+  border:1px solid var(--line);border-radius:8px;overflow:hidden;position:relative}
+.miniroom svg{display:block;width:100%;height:auto}
+.roomcap{font-size:11px;color:var(--ink-2);text-align:center;margin:6px 0 0}
+.bgm{margin-top:10px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;
+  padding:8px 10px;font-size:12px;display:flex;align-items:center;gap:8px;justify-content:space-between}
+.bgm button{font-family:var(--font-body);font-size:12px;border:1px solid var(--line);background:#fff;
+  border-radius:20px;padding:3px 12px;cursor:pointer;color:var(--ink)}
+.dotori{margin-top:10px;font-size:12px;color:var(--ink-2);text-align:center}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:2px solid var(--blue);padding-bottom:0;margin-bottom:12px}
+.tabs button{font-family:var(--font-head);font-size:13px;border:1px solid var(--line);border-bottom:0;
+  background:var(--panel-2);color:var(--ink-2);border-radius:6px 6px 0 0;padding:6px 11px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--blue);color:#fff;border-color:var(--blue)}
+h2{font-family:var(--font-head);font-size:15px;color:var(--blue);margin:0 0 10px;font-weight:400}
+.card{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:10px;background:var(--panel)}
+.card.lead{border-color:var(--accent);background:var(--accent-2)}
+.crow{display:flex;gap:10px;align-items:flex-start}
+.ava{width:52px;height:52px;flex:none;border-radius:50%;border:1px solid var(--line);background:#fff;overflow:hidden}
+.ava svg{width:100%;height:100%;display:block}
+.nm{font-family:var(--font-head);font-size:15px}
+.badge{font-size:11px;padding:1px 8px;border-radius:20px;margin-left:6px;vertical-align:1px;
+  background:var(--blue-soft);color:#2f4a63}
+.badge.lead{background:var(--accent);color:#fff}
+.desc{font-size:13px;color:var(--ink-2);margin:2px 0 6px}
+.skills{display:flex;gap:5px;flex-wrap:wrap}
+.chip{font-size:11px;border:1px dashed var(--line);border-radius:20px;padding:2px 9px;color:var(--ink-2);background:var(--panel-2)}
+.log{font-size:13px;border-bottom:1px dotted var(--line);padding:8px 2px;display:flex;gap:8px}
+.log time{color:var(--accent);font-size:11px;flex:none;width:44px}
+pre{background:#2f3944;color:#e6edf3;border-radius:8px;padding:10px 12px;overflow-x:auto;
+  font-size:12px;line-height:1.55;font-family:ui-monospace,Menlo,Consolas,monospace}
+.gbook textarea{width:100%;font-family:var(--font-body);font-size:13px;border:1px solid var(--line);
+  border-radius:8px;padding:8px;resize:vertical;min-height:58px;background:#fff;color:var(--ink)}
+.gbook .go{margin-top:6px;font-family:var(--font-head);font-size:13px;background:var(--accent);color:#fff;
+  border:0;border-radius:20px;padding:6px 16px;cursor:pointer}
+.gitem{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-top:8px;background:var(--panel-2);font-size:13px}
+.gitem .meta{font-size:11px;color:var(--ink-2);margin-bottom:2px}
+.foot{text-align:center;font-size:11px;color:#dce7f0;margin-top:12px}
+.err{color:#c0392b;font-size:12px;margin-top:4px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<h1 class="sr-only">주영봇, 효진봇, 수민봇, 양순이가 근무하는 가상 사무실 미니홈피</h1>
+<div class="wrap">
+<div class="frame">
+
+  <div class="topbar">
+    <div class="logo">🏠 가상 사무실 미니홈피</div>
+    <div class="counter"><span>TODAY <b id="today">1</b></span><span>TOTAL <b id="total">1</b></span></div>
+  </div>
+
+  <div class="cols">
+    <div class="left">
+      <div class="miniroom">
+        <svg viewBox="0 0 300 250" role="img" aria-label="네 명의 봇이 있는 미니룸">
+          <rect x="196" y="24" width="72" height="56" rx="4" fill="#bfe0f5" stroke="#8fbcdd"/>
+          <line x1="232" y1="24" x2="232" y2="80" stroke="#8fbcdd"/>
+          <line x1="196" y1="52" x2="268" y2="52" stroke="#8fbcdd"/>
+          <path d="M190 24h20l-20 20z" fill="#f6d68a"/><path d="M274 24h-20l20 20z" fill="#f6d68a"/>
+          <rect x="24" y="30" width="58" height="42" rx="4" fill="#fff" stroke="#c9b79a"/>
+          <text x="53" y="47" font-size="9" text-anchor="middle" fill="#8a7a63" font-family="sans-serif">이달의 MVP</text>
+          <text x="53" y="62" font-size="11" text-anchor="middle" fill="#e4638b" font-family="sans-serif">양순이 🐾</text>
+
+          <rect x="16" y="196" width="34" height="34" rx="4" fill="#c98b5e"/>
+          <ellipse cx="33" cy="188" rx="9" ry="14" fill="#6fbf8b"/>
+          <ellipse cx="22" cy="193" rx="7" ry="11" fill="#8fd1a3" transform="rotate(-20 22 193)"/>
+          <ellipse cx="44" cy="193" rx="7" ry="11" fill="#8fd1a3" transform="rotate(20 44 193)"/>
+
+          <g transform="translate(96,108) scale(1.05)">
+            <rect x="-26" y="34" width="52" height="34" rx="9" fill="#4a6b8f"/>
+            <path d="M-8 34h16l-8 16z" fill="#fff"/><path d="M0 44l5 10-5 6-5-6z" fill="#e4638b"/>
+            <circle cx="0" cy="8" r="24" fill="#ffe0c2" stroke="#e8b98c"/>
+            <path d="M-24 4a24 24 0 0 1 48 0q-24-26-48 0z" fill="#33303d"/>
+            <circle cx="-8" cy="9" r="2.4" fill="#33303d"/><circle cx="8" cy="9" r="2.4" fill="#33303d"/>
+            <path d="M-8 20q8 6 16 0" stroke="#b5735a" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+          </g>
+
+          <g transform="translate(176,116)">
+            <rect x="-24" y="32" width="48" height="32" rx="9" fill="#a88bd0"/>
+            <path d="M-22 2a22 22 0 0 1 44 0v34q-6-6-10-4V6H-12v26q-4-2-10 4z" fill="#7a4b2e"/>
+            <circle cx="0" cy="8" r="22" fill="#ffe0c2" stroke="#e8b98c"/>
+            <path d="M-22 6a22 22 0 0 1 44 0q-22-24-44 0z" fill="#7a4b2e"/>
+            <circle cx="-7" cy="9" r="2.2" fill="#33303d"/><circle cx="7" cy="9" r="2.2" fill="#33303d"/>
+            <path d="M-7 19q7 5 14 0" stroke="#b5735a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          </g>
+
+          <g transform="translate(96,192)">
+            <rect x="-21" y="28" width="42" height="26" rx="8" fill="#7ec9a6"/>
+            <circle cx="-20" cy="6" r="7" fill="#d9772e"/><circle cx="20" cy="6" r="7" fill="#d9772e"/>
+            <path d="M-19 4a19 19 0 0 1 38 0q-19-21-38 0z" fill="#d9772e"/>
+            <circle cx="0" cy="8" r="19" fill="#ffe0c2" stroke="#e8b98c"/>
+            <circle cx="-6" cy="9" r="2" fill="#33303d"/><circle cx="6" cy="9" r="2" fill="#33303d"/>
+            <circle cx="-12" cy="15" r="3" fill="#ffc2cc" opacity=".8"/><circle cx="12" cy="15" r="3" fill="#ffc2cc" opacity=".8"/>
+            <path d="M-5 19q5 5 10 0" stroke="#b5735a" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+          </g>
+
+          <g transform="translate(212,198)">
+            <ellipse cx="0" cy="34" rx="26" ry="17" fill="#e8c9a0"/>
+            <circle cx="-20" cy="28" r="8" fill="#e8c9a0"/><circle cx="20" cy="28" r="8" fill="#e8c9a0"/>
+            <circle cx="0" cy="42" r="9" fill="#e8c9a0"/>
+            <ellipse cx="-18" cy="6" rx="9" ry="13" fill="#dcb98c"/><ellipse cx="18" cy="6" rx="9" ry="13" fill="#dcb98c"/>
+            <circle cx="0" cy="-12" r="9" fill="#e8c9a0"/>
+            <circle cx="0" cy="4" r="17" fill="#f0d7b4"/>
+            <circle cx="-6" cy="1" r="2.2" fill="#3a3028"/><circle cx="6" cy="1" r="2.2" fill="#3a3028"/>
+            <ellipse cx="0" cy="9" rx="3.4" ry="2.6" fill="#3a3028"/>
+            <path d="M0 12q-4 5-8 2M0 12q4 5 8 2" stroke="#3a3028" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <path d="M-10 26h20v7h-20z" fill="#e4638b" rx="2"/>
+          </g>
+        </svg>
+      </div>
+      <p class="roomcap">미니룸 · 오늘도 4봇 전원 출근 완료</p>
+
+      <div class="bgm">
+        <span>♪ BGM — 사무실 자동화 테마</span>
+        <button type="button" id="bgmBtn" aria-pressed="false">▶ 재생</button>
+      </div>
+      <p class="dotori">🌰 보유 도토리 <b>18</b>개 · 스킬 1개당 5도토리</p>
+    </div>
+
+    <div class="right">
+      <div class="tabs" role="tablist">
+        <button role="tab" id="t-org" aria-selected="true" aria-controls="p-org">조직도</button>
+        <button role="tab" id="t-diary" aria-selected="false" aria-controls="p-diary">다이어리</button>
+        <button role="tab" id="t-code" aria-selected="false" aria-controls="p-code">설정파일</button>
+        <button role="tab" id="t-guest" aria-selected="false" aria-controls="p-guest">방명록</button>
+      </div>
+
+      <section id="p-org" role="tabpanel" aria-labelledby="t-org">
+        <h2>우리 팀 프로필</h2>
+
+        <div class="card lead">
+          <div class="crow">
+            <div class="ava"><svg viewBox="-30 -26 60 60"><circle cx="0" cy="4" r="24" fill="#ffe0c2" stroke="#e8b98c"/><path d="M-24 0a24 24 0 0 1 48 0q-24-26-48 0z" fill="#33303d"/><circle cx="-8" cy="5" r="2.4" fill="#33303d"/><circle cx="8" cy="5" r="2.4" fill="#33303d"/><path d="M-8 16q8 6 16 0" stroke="#b5735a" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg></div>
+            <div>
+              <div class="nm">주영봇<span class="badge lead">팀장</span></div>
+              <p class="desc">전체 방향 결정, 업무 분배, 최종 검토</p>
+              <div class="skills"><span class="chip">+ 스킬 비어 있음</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="crow">
+            <div class="ava"><svg viewBox="-28 -24 56 56"><path d="M-22 2a22 22 0 0 1 44 0v26h-44z" fill="#7a4b2e"/><circle cx="0" cy="4" r="21" fill="#ffe0c2" stroke="#e8b98c"/><path d="M-21 2a21 21 0 0 1 42 0q-21-23-42 0z" fill="#7a4b2e"/><circle cx="-7" cy="5" r="2.2" fill="#33303d"/><circle cx="7" cy="5" r="2.2" fill="#33303d"/><path d="M-7 15q7 5 14 0" stroke="#b5735a" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>
+            <div>
+              <div class="nm">효진봇<span class="badge">부팀장</span></div>
+              <p class="desc">일정 조율, 진행 점검, 팀장 대행</p>
+              <div class="skills"><span class="chip">+ 스킬 비어 있음</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="crow">
+            <div class="ava"><svg viewBox="-26 -22 52 52"><circle cx="-19" cy="2" r="7" fill="#d9772e"/><circle cx="19" cy="2" r="7" fill="#d9772e"/><circle cx="0" cy="4" r="19" fill="#ffe0c2" stroke="#e8b98c"/><path d="M-19 2a19 19 0 0 1 38 0q-19-21-38 0z" fill="#d9772e"/><circle cx="-6" cy="5" r="2" fill="#33303d"/><circle cx="6" cy="5" r="2" fill="#33303d"/><circle cx="-12" cy="11" r="3" fill="#ffc2cc" opacity=".8"/><circle cx="12" cy="11" r="3" fill="#ffc2cc" opacity=".8"/><path d="M-5 15q5 5 10 0" stroke="#b5735a" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg></div>
+            <div>
+              <div class="nm">수민봇<span class="badge">직원</span></div>
+              <p class="desc">자료 조사, 정리, 초안 작성</p>
+              <div class="skills"><span class="chip">+ 스킬 비어 있음</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="crow">
+            <div class="ava"><svg viewBox="-26 -26 52 52"><ellipse cx="-17" cy="0" rx="9" ry="12" fill="#dcb98c"/><ellipse cx="17" cy="0" rx="9" ry="12" fill="#dcb98c"/><circle cx="0" cy="-16" r="9" fill="#e8c9a0"/><circle cx="0" cy="0" r="17" fill="#f0d7b4"/><circle cx="-6" cy="-3" r="2.2" fill="#3a3028"/><circle cx="6" cy="-3" r="2.2" fill="#3a3028"/><ellipse cx="0" cy="5" rx="3.4" ry="2.6" fill="#3a3028"/><path d="M0 8q-4 5-8 2M0 8q4 5 8 2" stroke="#3a3028" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg></div>
+            <div>
+              <div class="nm">양순이<span class="badge">직원 · 푸들</span></div>
+              <p class="desc">반복 작업 처리, 알림, 분위기 담당</p>
+              <div class="skills"><span class="chip">+ 스킬 비어 있음</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="p-diary" role="tabpanel" aria-labelledby="t-diary" hidden>
+        <h2>사무실 다이어리</h2>
+        <div class="log"><time>09:02</time><span>주영봇: 오늘 할 일 4건 배정 완료</span></div>
+        <div class="log"><time>09:40</time><span>효진봇: 수민봇 초안 검토 → 수정 요청 2건</span></div>
+        <div class="log"><time>11:15</time><span>수민봇: 자료 조사 마무리, 정리본 업로드</span></div>
+        <div class="log"><time>14:20</time><span>양순이: 정기 알림 3건 발송 🐾</span></div>
+        <div class="log"><time>17:30</time><span>주영봇: 일일 마감 리포트 작성</span></div>
+      </section>
+
+      <section id="p-code" role="tabpanel" aria-labelledby="t-code" hidden>
+        <h2>Claude Code 에이전트 설정</h2>
+        <p class="desc">프로젝트 폴더에 아래 구조로 만들면 각 봇이 서브에이전트가 됩니다.</p>
+<pre>가상사무실/
+├── CLAUDE.md
+└── .claude/
+    └── agents/
+        ├── juyoung-bot.md   # 팀장
+        ├── hyojin-bot.md    # 부팀장
+        ├── sumin-bot.md     # 직원
+        └── yangsun-bot.md   # 직원(푸들)</pre>
+<pre>---
+name: juyoung-bot
+description: 팀장. 업무를 나누고 결과를 최종 검토한다.
+---
+너는 가상 사무실의 팀장 주영봇이다.
+요청이 오면 먼저 할 일을 쪼개고 담당 봇을 지정한다.
+결과물은 반드시 네가 마지막으로 검토한 뒤 보고한다.</pre>
+      </section>
+
+      <section id="p-guest" role="tabpanel" aria-labelledby="t-guest" hidden class="gbook">
+        <h2>방명록</h2>
+        <label class="sr-only" for="gmsg">방명록 내용</label>
+        <textarea id="gmsg" placeholder="한마디 남기고 가세요"></textarea>
+        <div id="gerr" class="err" hidden>내용을 입력해 주세요</div>
+        <button type="button" class="go" id="gbtn">남기기</button>
+        <div id="glist"></div>
+      </section>
+    </div>
+  </div>
+</div>
+<p class="foot">since 2026 · virtual office minihompy</p>
+</div>
+
+<script>
+(function(){
+  var tabs=[["t-org","p-org"],["t-diary","p-diary"],["t-code","p-code"],["t-guest","p-guest"]];
+  tabs.forEach(function(pair){
+    document.getElementById(pair[0]).addEventListener("click",function(){
+      tabs.forEach(function(p){
+        var on=p[0]===pair[0];
+        document.getElementById(p[0]).setAttribute("aria-selected",on?"true":"false");
+        document.getElementById(p[1]).hidden=!on;
+      });
+    });
+  });
+
+  var btn=document.getElementById("bgmBtn");
+  btn.addEventListener("click",function(){
+    var on=btn.getAttribute("aria-pressed")==="true";
+    btn.setAttribute("aria-pressed",on?"false":"true");
+    btn.textContent=on?"▶ 재생":"❚❚ 정지";
+  });
+
+  function load(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+  function save(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+  var total=parseInt(load("vo_total","0"),10)||0;
+  var last=load("vo_last",""), day=new Date().toDateString();
+  var today=parseInt(load("vo_today","0"),10)||0;
+  total++; if(last!==day){today=1;save("vo_last",day)}else{today++}
+  save("vo_total",String(total)); save("vo_today",String(today));
+  document.getElementById("total").textContent=total;
+  document.getElementById("today").textContent=today;
+
+  var list=document.getElementById("glist"), ta=document.getElementById("gmsg"),
+      err=document.getElementById("gerr");
+  function render(){
+    var arr=[]; try{arr=JSON.parse(load("vo_guest","[]"))||[]}catch(e){arr=[]}
+    list.innerHTML="";
+    arr.slice().reverse().forEach(function(it){
+      var d=document.createElement("div"); d.className="gitem";
+      var m=document.createElement("div"); m.className="meta"; m.textContent=it.t;
+      var b=document.createElement("div"); b.textContent=it.m;
+      d.appendChild(m); d.appendChild(b); list.appendChild(d);
+    });
+  }
+  ta.addEventListener("input",function(){err.hidden=true});
+  document.getElementById("gbtn").addEventListener("click",function(){
+    var v=ta.value.trim();
+    if(!v){err.hidden=false;return}
+    var arr=[]; try{arr=JSON.parse(load("vo_guest","[]"))||[]}catch(e){arr=[]}
+    arr.push({m:v,t:new Date().toLocaleString("ko-KR")});
+    save("vo_guest",JSON.stringify(arr.slice(-30)));
+    ta.value=""; render();
+  });
+  render();
+})();
+</script>
+</body>
+</html>
